@@ -1,0 +1,25 @@
+#!/bin/bash
+#
+TOTAL=0
+COUNT=20
+TIME=1
+# Ignore the vm's that contain the name salt
+NAME=$(nova list | grep -v salt | awk '{ print $2 }' | grep "\-" )
+for i in ${NAME}
+do
+        if ( nova delete ${i} ) ; then
+                echo -n "."
+                TOTAL=$(($TOTAL+1))
+        fi
+
+        if ((TIME++ / ${COUNT})) ; then
+                echo "$TOTAL"
+                TIME=1
+        fi
+done
+if ! ((TIME-- / ${COUNT})) ; then
+        echo " "
+fi
+
+echo "----------"
+echo "Total: ${TOTAL}"
